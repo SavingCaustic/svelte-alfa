@@ -1,11 +1,16 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { controlStore} from '$lib/stores/controls';
-  import {sendMessage} from "$lib/websocket";
+  import { controlStore } from "$lib/stores/controls";
+  import { sendMessage } from "$lib/websocket";
   import { connectWebSocket, disconnectWebSocket } from "$lib/websocket";
   import { browser } from "$app/environment"; // Import browser check
 
-  let rootDiv:HTMLElement;
+  import NavBar from "$lib/components/api-ref/navbar/NavBar.svelte";
+
+  //Svelte5
+  let { children } = $props();
+
+  let rootDiv: HTMLElement;
 
   type TouchType = "key" | "knob";
 
@@ -54,7 +59,7 @@
     let knob = target.closest(".t_knob") as HTMLElement | null;
     console.log("handling pointer down");
     if (key) {
-      console.log('here');
+      console.log("here");
       activeTouches.set(event.pointerId, { element: key, type: "key" });
       const keyId = key.id; // Use the ID as the key for the store
       playNote(getNoteNumber(keyId)); // Extract note number
@@ -67,7 +72,7 @@
         type: "knob",
         startX: event.clientX,
         startY: event.clientY,
-        orgCC: knobValue
+        orgCC: knobValue,
       });
       console.log("knob value:" + knobValue); //correct
     }
@@ -92,31 +97,31 @@
     ) {
       let deltaX = event.clientX - touchData.startX;
       let deltaY = event.clientY - touchData.startY;
-       // Determine axis movement
-       if (!touchData.swypeAxis) {
-            if (Math.abs(deltaY) > 3 && Math.abs(deltaX) < 3) {
-                touchData.swypeAxis = "Y";
-            } else if (Math.abs(deltaX) > 3 && Math.abs(deltaY) < 3) {
-                touchData.swypeAxis = "X";
-            }
+      // Determine axis movement
+      if (!touchData.swypeAxis) {
+        if (Math.abs(deltaY) > 3 && Math.abs(deltaX) < 3) {
+          touchData.swypeAxis = "Y";
+        } else if (Math.abs(deltaX) > 3 && Math.abs(deltaY) < 3) {
+          touchData.swypeAxis = "X";
         }
+      }
 
-        let newCC = touchData?.orgCC ?? 0;
-        let tmpCC = newCC;
+      let newCC = touchData?.orgCC ?? 0;
+      let tmpCC = newCC;
 
-        if (touchData.swypeAxis === "Y") {
-            newCC = Math.round(newCC - deltaY / 2);
-        } else if (touchData.swypeAxis === "X") {
-            newCC = Math.round(newCC + deltaX / 10);
-        }
+      if (touchData.swypeAxis === "Y") {
+        newCC = Math.round(newCC - deltaY / 2);
+      } else if (touchData.swypeAxis === "X") {
+        newCC = Math.round(newCC + deltaX / 10);
+      }
 
-        newCC = Math.max(0, Math.min(127, newCC)); // Clamp value between 0-127
-        console.log("new CC:" + newCC);
-        if (newCC != tmpCC) {
-          sendCC(touchData.element.id, newCC);
-          //Working: sendMessage("0xB01000");
-        }
-        //updateKnob(touchData.element, deltaX, deltaY);
+      newCC = Math.max(0, Math.min(127, newCC)); // Clamp value between 0-127
+      console.log("new CC:" + newCC);
+      if (newCC != tmpCC) {
+        sendCC(touchData.element.id, newCC);
+        //Working: sendMessage("0xB01000");
+      }
+      //updateKnob(touchData.element, deltaX, deltaY);
     }
   }
 
@@ -127,10 +132,9 @@
     //well really only send if there's a new value..
     let ccNumber = ccName.replace("cc_", "");
     let ccValue = Number(ccVal).toString(16).padStart(2, "0"); // Convert value to hex
-    let midi = '0xB0' + ccNumber + ccValue;
+    let midi = "0xB0" + ccNumber + ccValue;
     sendMessage(midi);
   }
-
 
   function handlePointerUp(event: PointerEvent): void {
     let touchData = activeTouches.get(event.pointerId);
@@ -160,5 +164,29 @@
   }
 </script>
 
-<slot />
-<!-- This renders the page content -->
+<div id="mainFrame">
+  <div id="slotContainer">
+    {@render children()}
+  </div>
+  <div id="navContainer">
+    <NavBar />  
+  </div>
+</div>
+
+<style>
+  #mainFrame {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full screen height */
+  }
+
+  #slotContainer {
+    flex: 1; /* Takes the remaining space */
+    overflow: auto; /* Allows scrolling if content overflows */
+  }
+
+  #navContainer {
+/*    height: 80px;
+    flex-shrink: 0; */
+  }
+</style>
