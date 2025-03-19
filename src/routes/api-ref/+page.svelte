@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { sendMessage, websockLast } from "$lib/websocket";
+    import { websockLast } from "$lib/websocket";
     import RpcButton from "$lib/components/api-ref/RpcButton.svelte";
     import Panel from "$lib/components/api-ref/Panel.svelte";
     import Knob from "$lib/components/api-ref/Knob.svelte";

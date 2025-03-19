@@ -1,11 +1,10 @@
 <script lang="ts">
     import { sendMessage } from "$lib/websocket";
 
-    export let data: string;
-    export let label: string;
+    let {data = "", label = ""} = $props();
 </script>
 
-<button class="wsButton" on:click={() => sendMessage(data)}>
+<button class="wsButton" onclick={() => sendMessage(data)}>
     {label}
 </button>
 

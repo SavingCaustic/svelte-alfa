@@ -1,6 +1,7 @@
 <script lang="ts">
-    export let page: string;
-    export let label: string;
+    let { page = "", label = "" } = $props();
+    //type-safe:
+    //let { page, label } = $props() as { page: string; label: string };
 </script>
 
 <a class="linkButton" href={page}>{label}</a>
@@ -12,9 +13,9 @@
         font-size: 1.5rem;
         font-family: Courier;
         text-transform: uppercase;
-        padding:0.5rem;
-        padding-top:0.8rem;
-        background-color:#ccd;
-        color:#C55;
+        padding: 0.5rem;
+        padding-top: 0.8rem;
+        background-color: #ccd;
+        color: #c55;
     }
 </style>

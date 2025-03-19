@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let label: string; // Unique ID for each knob or slider
+  let {label = ""} = $props();
 </script>
 
 <button class="navBtn">

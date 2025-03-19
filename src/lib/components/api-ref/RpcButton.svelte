@@ -1,11 +1,10 @@
 <script lang="ts">
     import { rpcPostUri } from "$lib/rpc";
 
-    export let uri: string;
-    export let label: string;
+    let {uri = "", label = ""} = $props();
 </script>
 
-<button class="rpcButton" on:click={() => rpcPostUri(uri)}>
+<button class="rpcButton" onclick={() => rpcPostUri(uri)}>
     {label}
 </button>
 

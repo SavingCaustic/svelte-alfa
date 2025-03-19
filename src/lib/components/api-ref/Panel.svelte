@@ -1,10 +1,9 @@
 <script>
-	export let label;
-	let isOpen = false;
+  let {label = "", isOpen = false} = $props();
 </script>
 
 <div class="panel">
-	<button class="panel-header" on:click={() => isOpen = !isOpen}>
+	<button class="panel-header" onclick={() => isOpen = !isOpen}>
 		{label} {isOpen ? "▲" : "▼"}
 	</button>
 	{#if isOpen}

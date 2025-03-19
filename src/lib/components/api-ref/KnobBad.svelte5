@@ -1,0 +1,62 @@
+<script lang="ts">
+  import { controlStore } from "$lib/stores/controls"; // Import the shared store
+
+  let {id = "", steps = ""} = $props();
+
+  const value = $derived(() => {
+    if (!(id in $controlStore)) {
+      $controlStore[id] = 64; // Ensure a default value is always set in the store
+    }
+    return $controlStore[id]; // Now safely retrieve it
+  });
+
+  const numSteps = $derived(() => {
+    if (steps !== undefined) {
+      return Number(steps); // Convert steps to number and store it privately
+    } else {
+      return 0;
+    }
+  });
+
+  function calcKnobRotation(val: number) {
+  let rotation = val * 2 - 128; // Normalized rotation
+
+  if (numSteps() > 0) {
+    // Quantize the rotation to steps
+    const stepSize = 127 / (numSteps() - 1); // Interval per step
+    const quantizedVal = Math.round(val / stepSize) * stepSize; // Quantize the value based on step size
+    rotation = quantizedVal * 2 - 128; // Map it back to a rotation angle
+  }
+
+  return `transform: rotate(${rotation}deg);`;
+}
+
+</script>
+
+<div class="control knobBG">
+  <img
+    class="t_knob knob"
+    draggable="false"
+    alt="knob"
+    src="/fe/dark/knob_fg.png"
+    style={calcKnobRotation(value())}
+    {id}
+  />
+</div>
+
+<style>
+  .knobBG {
+    display: inline-block;
+    margin: 4px;
+    border: 1px solid #ccc;
+    background-image: url("/fe/dark/knob_bg.png");
+    background-size: 100px;
+  }
+
+  .knob {
+    padding:0px;
+    width:100px;
+    height:100px;
+  }
+</style>
+
